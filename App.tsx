@@ -1,6 +1,6 @@
 import {StatusBar} from 'expo-status-bar';
-import React from 'react';
-import {Dimensions, FlatList, Image, StyleSheet, Text, View} from 'react-native';
+import React, {useRef} from 'react';
+import {Animated, Dimensions, FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import {data} from "./data";
 
 const {width, height} = Dimensions.get('screen');
@@ -8,23 +8,31 @@ const imageW = width * 0.7;
 const imageH = imageW * 1.54;
 
 export default function App() {
+    const scrollX = useRef(new Animated.Value(0)).current;
     return (
         <View style={styles.container}>
             <StatusBar hidden/>
             <View style={StyleSheet.absoluteFillObject}>
-                {data.map((item, index) => (
-                        <Image
+                {data.map((item, index) => {
+                    const opacity = scrollX.interpolate({
+                        inputRange: [(index - 1) * width, index * width, (index+1) * width],
+                        outputRange: [0, 1, 0],
+                    })
+                    return (
+                        <Animated.Image
                             key={`image-${index}`}
                             source={{uri: item}}
-                            style={[StyleSheet.absoluteFillObject]}
+                            style={[StyleSheet.absoluteFillObject, {opacity}]}
                             blurRadius={50}
                         />
-                    ))
+                    )
+                })
                 }
             </View>
-            <FlatList
+            <Animated.FlatList
                 horizontal
                 pagingEnabled
+                onScroll={Animated.event([{nativeEvent: {contentOffset: {x: scrollX}}}], {useNativeDriver: true})}
                 data={data}
                 keyExtractor={(_, index) => `${index}`}
                 renderItem={({item}) => (
