@@ -11,6 +11,17 @@ export default function App() {
     return (
         <View style={styles.container}>
             <StatusBar hidden/>
+            <View style={StyleSheet.absoluteFillObject}>
+                {data.map((item, index) => (
+                        <Image
+                            key={`image-${index}`}
+                            source={{uri: item}}
+                            style={[StyleSheet.absoluteFillObject]}
+                            blurRadius={50}
+                        />
+                    ))
+                }
+            </View>
             <FlatList
                 horizontal
                 pagingEnabled
@@ -23,7 +34,8 @@ export default function App() {
                             style={{
                                 width: imageW,
                                 height: imageH,
-                                resizeMode: 'cover'
+                                resizeMode: 'cover',
+                                borderRadius: 16
                             }}
                         />
                     </View>
